@@ -1,15 +1,13 @@
 # 🍔 Food Delivery Demand Prediction System
 
-## 📌 Project Overview
+## Problem Statement
+Food delivery platforms must accurately anticipate customer demand to ensure efficient rider allocation, reduce delivery delays, and optimize operational costs. Poor demand estimation can lead to rider shortages, excess idle capacity, and customer dissatisfaction.
 
-Food delivery platforms must accurately predict customer demand to manage delivery partners, prepare restaurants, and reduce delays.  
-If demand is underestimated, customers face long waiting times. If overestimated, resources are wasted.
-
-This project focuses on analyzing historical food delivery order data to understand demand patterns and predict future order volumes, helping platforms improve service efficiency and customer satisfaction.
+This project aims to **forecast daily food order demand across delivery zones** by analyzing historical order data, temporal patterns, and weather conditions. The objective is to support **data-driven planning and operational decision-making** for food delivery services.
 
 ---
 
-## 🎯 Objective
+## Objective
 
 - Analyze past food order trends  
 - Identify peak demand times and locations  
@@ -18,7 +16,19 @@ This project focuses on analyzing historical food delivery order data to underst
 
 ---
 
-## 📊 Dataset Description
+## Tools and Technologies Used
+- **Programming Language:** Python  
+- **Libraries:**  
+  - Pandas, NumPy (data cleaning and processing)  
+  - Matplotlib (visualization)  
+  - Scikit-learn (machine learning models and evaluation)  
+  - Meteostat (weather data integration)  
+- **Dataset:** Kaggle Food Delivery Order History Dataset  
+- **External Data:** Historical weather data (temperature, rainfall, wind speed)
+
+---
+
+## Dataset Description
 
 The dataset contains historical records of food delivery orders including:
 
@@ -32,58 +42,85 @@ Each row represents food delivery activity during a specific time period and are
 
 ---
 
-## 🛠️ Project Workflow
+## Project Workflow / Methodology
 
-### 1. Data Loading
-- Import historical food order data  
-- Inspect dataset structure  
+### 1. Data Loading and Initial Exploration
+- Loaded historical food order data from CSV files.
+- Examined dataset structure, dimensions, data types, and summary statistics.
+- Identified missing values and duplicate records.
 
-### 2. Data Cleaning
-- Handle missing or incorrect timestamps  
-- Standardize location and category names  
-- Remove duplicate records  
+### 2. Data Cleaning and Preprocessing
+- Dropped irrelevant and high-missing-value columns such as reviews, discounts, and complaints.
+- Filled missing numerical values using median imputation.
+- Converted order timestamps into proper datetime format.
+- Extracted date-level information for time-series aggregation.
 
-### 3. Feature Engineering
-- Extract date and time features (day, hour, weekday)  
-- Create demand-based indicators  
-- Aggregate orders by time and zone  
+### 3. Zone Standardization
+- Cleaned and standardized delivery zone names to ensure consistency.
+- Removed formatting inconsistencies such as extra spaces, symbols, and case differences.
 
-### 4. Exploratory Data Analysis
-- Analyze demand by time of day  
-- Study demand across locations  
-- Identify peak ordering periods  
+### 4. Demand Aggregation
+- Aggregated order data to compute **daily order counts per zone**.
+- Performed basic validation to confirm date ranges, zone counts, and record consistency.
 
-### 5. Model Preparation
-- Prepare features for prediction  
-- Split data into training and testing sets  
+### 5. Weather Data Integration
+- Retrieved daily weather data (temperature, rainfall, wind speed) using Meteostat.
+- Cleaned and selected relevant weather variables.
+- Merged weather data with daily demand data.
+- Created rainfall and heat indicators relevant to local climate conditions.
 
-### 6. Demand Prediction
-- Train machine learning models to estimate order demand  
-- Evaluate prediction performance  
+### 6. Feature Engineering
+- Generated calendar-based features to capture seasonality:
+  - Day of week, month, weekend indicator
+- Created lag-based demand features:
+  - Previous day demand (lag-1)
+  - Demand from 7 days ago (lag-7)
+- Computed rolling averages to capture short-term trends.
+- Handled missing values caused by lag and rolling operations.
+
+### 7. Zone Selection and Dataset Preparation
+- Identified high-demand zones based on total order volume.
+- Created zone-specific datasets for focused modeling.
+- Defined input features and target variable (daily orders).
+
+### 8. Model Development
+- Applied time-based train-test split to preserve temporal order.
+- Built and evaluated multiple models:
+  - Baseline Lag Model
+  - Linear Regression
+  - Decision Tree Regressor
+  - Random Forest Regressor
+
+### 9. Model Evaluation and Comparison
+- Evaluated models using **Mean Absolute Error (MAE)** and **Root Mean Squared Error (RMSE)**.
+- Compared model performance visually and numerically.
+- Visualized actual vs predicted demand trends for selected zones.
+
+### 10. Forecast Generation
+- Generated demand forecasts for **all delivery zones** using Random Forest.
+- Created a **next-day demand forecast file** for operational planning.
+- Saved final datasets and forecast outputs for reproducibility.
 
 ---
 
-## 📈 Key Concepts Used
-
-- Time-based demand analysis  
-- Feature engineering from timestamps  
-- Supervised machine learning for forecasting  
-- Data aggregation techniques  
-
----
-
-## ✅ Outcome
-
-The system helps in:
-
-- Predicting future food order demand  
-- Improving delivery partner allocation  
-- Reducing delivery delays  
-- Enhancing overall customer experience  
-
-This supports smarter operational planning for food delivery services.
+## Results
+- Accurate daily demand forecasts at the zone level.
+- Random Forest consistently outperformed baseline and simpler models.
+- Weather and lag-based features significantly improved prediction accuracy.
+- Generated output files:
+  - `final_df_model.csv`
+  - `all_zones_demand_forecast.csv`
+  - `next_day_zone_forecast.csv`
 
 ---
+
+## Key Learnings and Conclusion
+- Demand forecasting benefits strongly from lag and rolling-window features.
+- Weather conditions influence food ordering behavior and should be incorporated.
+- Time-based train-test splits are essential for realistic forecasting.
+- Ensemble models like Random Forest handle non-linear demand patterns effectively.
+- This project demonstrates how data analytics can enhance operational efficiency in food delivery platforms.
+
 
 ## 🚀 Future Improvements
 
